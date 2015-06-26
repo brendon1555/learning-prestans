@@ -19,3 +19,7 @@ class Base(webapp2.RequestHandler):
 class MainHandler(Base):
     def get(self):
         self.render_template("index")
+
+class StaticHandler(Base):
+    def get(self):
+        self.render_template("static")

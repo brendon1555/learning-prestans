@@ -21,7 +21,8 @@ import prestans.rest
 
 #webapp2 router
 app = webapp2.WSGIApplication([
-    ('/', opeth.page.handlers.MainHandler)
+    ('/', opeth.page.handlers.MainHandler),
+    ('/static', opeth.page.handlers.StaticHandler)
 ], debug=True)
 
 #prestans router
