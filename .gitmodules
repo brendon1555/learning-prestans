@@ -1,0 +1,9 @@
+[submodule "client/closure-library"]
+	path = client/closure-library
+	url = https://github.com/google/closure-library.git
+[submodule "ext/prestans"]
+	path = ext/prestans
+	url = https://github.com/anomaly/prestans.git
+[submodule "client/prestans-client"]
+	path = client/prestans-client
+	url = https://github.com/anomaly/prestans-client.git
