@@ -17,7 +17,7 @@ WARNING_LEVEL = VERBOSE
 
 deps:
 	@echo "Generating Closure dependencies using depswriter..."
-	cd client/; python $(DEPSWRITER) --root_with_prefix="prestans ../../../prestans" --root_with_prefix="$(PROJ_NAME) ../../../$(PROJ_NAME)" > $(PROJ_NAME)-deps.js
+	cd client/; python $(DEPSWRITER) --root_with_prefix="prestans-client ../../../prestans-client" --root_with_prefix="$(PROJ_NAME) ../../../$(PROJ_NAME)" > $(PROJ_NAME)-deps.js
 
 clean:
 	[ -d alembic ] && rm alembic/versions/*
