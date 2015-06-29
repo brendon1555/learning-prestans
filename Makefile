@@ -24,3 +24,7 @@ clean:
 	[ -d build ] && rm -rf build
 	rm -f client/$(PROJ_NAME)-deps.js
 	@echo "all clear! start re-buidling :)"
+
+stubs:
+	$(PRIDE) gen --template closure.model --model app/$(PROJ_NAME)/rest/models.py --namespace $(PROJ_NAME).data.model --output client/$(PROJ_NAME)/data/model
+	$(PRIDE) gen --template closure.filter --model app/$(PROJ_NAME)/rest/models.py --namespace $(PROJ_NAME).data.filter --output client/$(PROJ_NAME)/data/filter
