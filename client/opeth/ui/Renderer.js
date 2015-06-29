@@ -33,8 +33,6 @@ opeth.ui.Renderer.prototype.enterDocument = function() {
 
     var element_ = this.getElement();
 
-    console.log(element_);
-
     var rowDiv_ = this.getDomHelper().createDom(goog.dom.TagName.DIV);
     goog.dom.classlist.add(rowDiv_, goog.getCssName("row"));
 
