@@ -26,5 +26,5 @@ clean:
 	@echo "all clear! start re-buidling :)"
 
 stubs:
-	$(PRIDE) gen --template closure.model --model app/$(PROJ_NAME)/rest/models.py --namespace $(PROJ_NAME).data.model --output client/$(PROJ_NAME)/data/model
-	$(PRIDE) gen --template closure.filter --model app/$(PROJ_NAME)/rest/models.py --namespace $(PROJ_NAME).data.filter --output client/$(PROJ_NAME)/data/filter
+	$(PRIDE) gen --template closure.model -m app/$(PROJ_NAME)/rest/models.py -n $(PROJ_NAME).data.model -fn $(PROJ_NAME).data.filter -o client/$(PROJ_NAME)/data/model
+	$(PRIDE) gen --template closure.filter -m app/$(PROJ_NAME)/rest/models.py -n $(PROJ_NAME).data.filter -o client/$(PROJ_NAME)/data/filter

@@ -13,7 +13,7 @@ goog.require('prestans.types.Model.AttributeChangedEvent');
 goog.require('prestans.types.Model');
 
 goog.require('prestans.types.String');
-goog.require('None.Album');
+goog.require('opeth.data.filter.Album');
 
 /**
  * @constructor
@@ -148,10 +148,13 @@ opeth.data.model.Album.prototype.clone = function(opt_filter) {
 
 /**
  * @param {boolean} minified
- * @param {None.Album=} opt_filter
+ * @param {opeth.data.filter.Album=} opt_filter
  */
 opeth.data.model.Album.prototype.getJSONObject = function(minified, opt_filter) {
 
+    //check that filter is of correct type
+    if(goog.isDefAndNotNull(opt_filter) && !(opt_filter instanceof opeth.data.filter.Album))
+        throw "Incorrect filter for this model";
     
     var jsonifiedObject_ = {};
     
@@ -182,7 +185,7 @@ opeth.data.model.Album.prototype.getJSONObject = function(minified, opt_filter) 
 /**
  * @export
  * @param {boolean} minified
- * @param {None.Album=} opt_filter
+ * @param {opeth.data.filter.Album=} opt_filter
  */
 opeth.data.model.Album.prototype.getJSONString = function(minified, opt_filter) {
     return goog.json.serialize(this.getJSONObject(minified, opt_filter));

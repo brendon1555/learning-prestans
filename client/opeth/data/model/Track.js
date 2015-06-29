@@ -13,7 +13,7 @@ goog.require('prestans.types.Model.AttributeChangedEvent');
 goog.require('prestans.types.Model');
 
 goog.require('prestans.types.String');
-goog.require('None.Track');
+goog.require('opeth.data.filter.Track');
 
 /**
  * @constructor
@@ -148,10 +148,13 @@ opeth.data.model.Track.prototype.clone = function(opt_filter) {
 
 /**
  * @param {boolean} minified
- * @param {None.Track=} opt_filter
+ * @param {opeth.data.filter.Track=} opt_filter
  */
 opeth.data.model.Track.prototype.getJSONObject = function(minified, opt_filter) {
 
+    //check that filter is of correct type
+    if(goog.isDefAndNotNull(opt_filter) && !(opt_filter instanceof opeth.data.filter.Track))
+        throw "Incorrect filter for this model";
     
     var jsonifiedObject_ = {};
     
@@ -182,7 +185,7 @@ opeth.data.model.Track.prototype.getJSONObject = function(minified, opt_filter) 
 /**
  * @export
  * @param {boolean} minified
- * @param {None.Track=} opt_filter
+ * @param {opeth.data.filter.Track=} opt_filter
  */
 opeth.data.model.Track.prototype.getJSONString = function(minified, opt_filter) {
     return goog.json.serialize(this.getJSONObject(minified, opt_filter));

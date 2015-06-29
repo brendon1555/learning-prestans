@@ -1,6 +1,7 @@
 goog.provide('opeth.ui.band.InputForm');
 
 goog.require('goog.ui.Component');
+goog.require('opeth.ui.band.Renderer');
 
 /**
  * @constructor
@@ -39,7 +40,7 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     this.getHandler().listen(element_, goog.events.EventType.SUBMIT, function(event) {
         event.preventDefault();
     });
-    
+
     console.log("Inside band InputForm");
 
     var formGroup_ = this.getDomHelper().createDom(goog.dom.TagName.DIV);
@@ -68,5 +69,25 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
 
     var formButtonText_ = this.getDomHelper().createTextNode("Add Band");
     this.getDomHelper().appendChild(formButton_, formButtonText_);
+
+    this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
+        event.preventDefault();
+        this.addBand_(formInput_.value);
+    });
     
+};
+
+opeth.ui.band.InputForm.prototype.addBand_ = function(bandName) {
+
+    var band_ = new opeth.data.model.Band();
+    band_.setName(bandName);
+
+    opeth.GLOBALS.API_CLIENT.dispatchRequest(
+        opeth.data.request.Band.create(band_),
+        goog.bind(function(response) {
+            console.log("Band Added");
+        }, this),
+        goog.bind(function(response) {
+            console.log("Fail");
+        }, this));
 };

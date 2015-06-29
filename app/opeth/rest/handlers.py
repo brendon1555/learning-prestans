@@ -32,7 +32,8 @@ class LogoutHandler(Base):
         user = users.get_current_user()
         self.redirect(users.create_logout_url("/api/band"))
 
-
+band_filter = prestans.parser.AttributeFilter.from_model(model_instance=opeth.rest.models.Band(), default_value=False)
+band_filter.name = True
 class RestBandCollectionHandler(Base):
 
     __parser_config__ = prestans.parser.Config(
@@ -42,6 +43,7 @@ class RestBandCollectionHandler(Base):
         ),
         POST=prestans.parser.VerbConfig(
             body_template=opeth.rest.models.Band(),
+            request_attribute_filter=band_filter,
             response_template=None
         )
     )
