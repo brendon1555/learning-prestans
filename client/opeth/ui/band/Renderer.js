@@ -61,8 +61,10 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
     this.tbody_ = this.getDomHelper().createDom(goog.dom.TagName.TBODY);
     this.getDomHelper().appendChild(table_, this.tbody_);
 
+    this.fetchAll_();
+};
 
-    //make function
+opeth.ui.band.Renderer.prototype.fetchAll_ = function() {
     opeth.GLOBALS.API_CLIENT.dispatchRequest(
         opeth.data.request.Band.fetchAll(),
         goog.bind(function(response) {
