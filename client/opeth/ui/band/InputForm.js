@@ -3,6 +3,10 @@ goog.provide('opeth.ui.band.InputForm');
 goog.require('goog.ui.Component');
 goog.require('opeth.ui.band.Renderer');
 
+goog.require('goog.events');
+goog.require('goog.events.EventTarget');
+
+
 /**
  * @constructor
  * @extends {goog.ui.Component}
@@ -11,7 +15,7 @@ goog.require('opeth.ui.band.Renderer');
 opeth.ui.band.InputForm = function(opt_domHelper) {
     goog.base(this, opt_domHelper);
 };
-goog.inherits(opeth.ui.band.InputForm, goog.ui.Component);
+goog.inherits(opeth.ui.band.InputForm, goog.ui.Component, goog.events.EventTarget);
 
 /**
  * @override
@@ -86,8 +90,18 @@ opeth.ui.band.InputForm.prototype.addBand_ = function(bandName) {
         opeth.data.request.Band.create(band_),
         goog.bind(function(response) {
             console.log("Band Added");
+            this.eventDispatcher_(band_);
         }, this),
         goog.bind(function(response) {
             console.log("Fail");
         }, this));
+
+};
+
+opeth.ui.band.InputForm.prototype.eventDispatcher_ = function(band_) {
+    this.dispatchEvent({
+        type: "band_input",
+        target: band_
+    });
+    console.log("inside eventDispatcher");
 };

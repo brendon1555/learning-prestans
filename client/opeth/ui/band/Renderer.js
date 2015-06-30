@@ -4,6 +4,8 @@ goog.require('goog.ui.Component');
 goog.require('opeth.ui.band.InputForm');
 goog.require('opeth.data.request.Band');
 
+goog.require('goog.events');
+
 /**
  * @constructor
  * @extends {goog.ui.Component}
@@ -37,6 +39,7 @@ opeth.ui.band.Renderer.prototype.decorateInternal = function(element) {
  * @override
  */
 opeth.ui.band.Renderer.prototype.enterDocument = function() {
+    console.log("Inside enterDocument");
     goog.base(this, 'enterDocument');
 
     var element_ = this.getElement();
@@ -53,6 +56,8 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
     var InputForm_ = new opeth.ui.band.InputForm(this.getDomHelper());
     InputForm_.render(element_);
 
+    goog.events.listen(InputForm_, "band_input", goog.bind(this.fetchAll_, this));
+
     var table_ = this.getDomHelper().createDom(goog.dom.TagName.TABLE);
     goog.dom.classlist.add(table_, goog.getCssName("table"));
     goog.dom.classlist.add(table_, goog.getCssName("table-hover"));
@@ -65,6 +70,7 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
 };
 
 opeth.ui.band.Renderer.prototype.fetchAll_ = function() {
+    console.log("Inside fetchAll");
     opeth.GLOBALS.API_CLIENT.dispatchRequest(
         opeth.data.request.Band.fetchAll(),
         goog.bind(function(response) {
@@ -73,17 +79,21 @@ opeth.ui.band.Renderer.prototype.fetchAll_ = function() {
             this.renderBands_();
         }, this),
         goog.bind(function(response) {
-            console.log("Fail");
+            console.log("Fail fetchAll");
         }, this));
 };
 
 
 opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
+    console.log("Inside createBandCell");
     var tableRow_ = this.getDomHelper().createDom(goog.dom.TagName.TR);
 
     var tableCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
     tableCell_.setAttribute("id", band.getId());
     this.getDomHelper().appendChild(tableRow_, tableCell_);
+
+    var tableButtonCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
+    this.getDomHelper().appendChild(tableRow_, tableButtonCell_)
 
     var tableCellText_ = this.getDomHelper().createTextNode(band.getName());
     this.getDomHelper().appendChild(tableCell_, tableCellText_);
@@ -92,7 +102,7 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
     goog.dom.classlist.add(tableCellButton_, goog.getCssName("close"));
     tableCellButton_.setAttribute("type", "button");
     tableCellButton_.setAttribute("aria-label", "Close");
-    this.getDomHelper().appendChild(tableCell_, tableCellButton_);
+    this.getDomHelper().appendChild(tableButtonCell_, tableCellButton_);
 
     var tableCellButtonSpan_ = this.getDomHelper().createDom(goog.dom.TagName.SPAN);
     tableCellButtonSpan_.setAttribute("aria-hiddem", "true");
@@ -101,22 +111,21 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
     var tableCellButtonText_ = this.getDomHelper().createTextNode("×");
     this.getDomHelper().appendChild(tableCellButtonSpan_, tableCellButtonText_);
 
-    this.getHandler().listen(tableCellButtonText_, goog.events.EventType.CLICK, function(event) {
+    this.getHandler().listen(tableCellButtonSpan_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
-        this.deleteBand_(band.getId());
-
+        console.log(band.getId());
         opeth.GLOBALS.API_CLIENT.dispatchRequest(
-            opeth.data.request.Band.delete(bandId),
+            opeth.data.request.Band.delete(band.getId()),
             goog.bind(function(response) {
                 console.log("Band Deleted");
-                this.renderBands_();
+                this.fetchAll_();
             }, this),
             goog.bind(function(response) {
-                console.log("Fail");
+                console.log("Fail delete");
             }, this));
 
     });
-    this.getHandler().listen(tableRow_, goog.events.EventType.CLICK, function(event) {
+    this.getHandler().listen(tableCell_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
 
         this.selectBand_(tableRow_, band);
@@ -127,9 +136,8 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
 
 
 opeth.ui.band.Renderer.prototype.renderBands_ = function() {
-    console.log(this.tbody_);
+    console.log("Inside renderBands");
     this.getDomHelper().removeChildren(this.tbody_);
-    console.log(this.tbody_)
 
     var bands_ = (this.getModel());
 
@@ -147,6 +155,7 @@ opeth.ui.band.Renderer.prototype.renderBands_ = function() {
 };
 
 opeth.ui.band.Renderer.prototype.selectBand_ = function(bandCell, band) {
+    console.log("Inside selectBand");
     if(goog.isDefAndNotNull(this.selectedBandCell_))
         goog.dom.classlist.remove(this.selectedBandCell_, goog.getCssName("success"));
     this.selectedBandCell_ = bandCell;
