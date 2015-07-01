@@ -53,10 +53,11 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
 
     var formLabel_ = this.getDomHelper().createDom(goog.dom.TagName.LABEL);
     formLabel_.setAttribute("for", "inputBand");
+    formLabel_.textContent = "Band";
     this.getDomHelper().appendChild(formGroup_, formLabel_);
 
-    var formLabelText_ = this.getDomHelper().createTextNode("Band");
-    this.getDomHelper().appendChild(formLabel_, formLabelText_);
+    //var formLabelText_ = this.getDomHelper().createTextNode("Band");
+    //this.getDomHelper().appendChild(formLabel_, formLabelText_);
 
     var formInput_ = this.getDomHelper().createDom(goog.dom.TagName.INPUT);
     goog.dom.classlist.add(formInput_, goog.getCssName("form-control"));
@@ -69,10 +70,11 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     goog.dom.classlist.add(formButton_, goog.getCssName("btn"));
     goog.dom.classlist.add(formButton_, goog.getCssName("btn-default"));
     formButton_.setAttribute("type", "submit");
+    formButton_.textContent = "Add Band";
     this.getDomHelper().appendChild(element_, formButton_);
 
-    var formButtonText_ = this.getDomHelper().createTextNode("Add Band");
-    this.getDomHelper().appendChild(formButton_, formButtonText_);
+    //var formButtonText_ = this.getDomHelper().createTextNode("Add Band");
+    //this.getDomHelper().appendChild(formButton_, formButtonText_);
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();

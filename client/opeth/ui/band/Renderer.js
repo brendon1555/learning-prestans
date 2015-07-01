@@ -47,8 +47,9 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
     console.log("Inside Band renderer");
 
     var heading_ = this.getDomHelper().createDom(goog.dom.TagName.H1);
-    var headingText_ = this.getDomHelper().createTextNode("Bands");
-    this.getDomHelper().appendChild(heading_, headingText_);
+    //var headingText_ = this.getDomHelper().createTextNode("Bands");
+    //this.getDomHelper().appendChild(heading_, headingText_);
+    heading_.textContent = "Bands";
     this.getDomHelper().appendChild(element_, heading_);
 
 
@@ -90,13 +91,14 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
 
     var tableCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
     tableCell_.setAttribute("id", band.getId());
+    tableCell_.textContent = band.getName();
     this.getDomHelper().appendChild(tableRow_, tableCell_);
 
     var tableButtonCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
     this.getDomHelper().appendChild(tableRow_, tableButtonCell_)
 
-    var tableCellText_ = this.getDomHelper().createTextNode(band.getName());
-    this.getDomHelper().appendChild(tableCell_, tableCellText_);
+    //var tableCellText_ = this.getDomHelper().createTextNode(band.getName());
+    //this.getDomHelper().appendChild(tableCell_, tableCellText_);
 
     var tableCellButton_ = this.getDomHelper().createDom(goog.dom.TagName.BUTTON);
     goog.dom.classlist.add(tableCellButton_, goog.getCssName("close"));
@@ -106,10 +108,11 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
 
     var tableCellButtonSpan_ = this.getDomHelper().createDom(goog.dom.TagName.SPAN);
     tableCellButtonSpan_.setAttribute("aria-hiddem", "true");
+    tableCellButtonSpan_.textContent = "×";
     this.getDomHelper().appendChild(tableCellButton_, tableCellButtonSpan_);
 
-    var tableCellButtonText_ = this.getDomHelper().createTextNode("×");
-    this.getDomHelper().appendChild(tableCellButtonSpan_, tableCellButtonText_);
+    //var tableCellButtonText_ = this.getDomHelper().createTextNode("×");
+    //this.getDomHelper().appendChild(tableCellButtonSpan_, tableCellButtonText_);
 
     this.getHandler().listen(tableCellButtonSpan_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();

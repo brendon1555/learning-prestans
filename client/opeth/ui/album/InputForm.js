@@ -1,6 +1,11 @@
 goog.provide('opeth.ui.album.InputForm');
 
 goog.require('goog.ui.Component');
+goog.require('opeth.ui.album.Renderer');
+
+goog.require('goog.events');
+goog.require('goog.events.EventTarget');
+
 
 /**
  * @constructor
@@ -10,7 +15,9 @@ goog.require('goog.ui.Component');
 opeth.ui.album.InputForm = function(opt_domHelper) {
     goog.base(this, opt_domHelper);
 };
-goog.inherits(opeth.ui.album.InputForm, goog.ui.Component);
+goog.inherits(opeth.ui.album.InputForm, goog.ui.Component, goog.events.EventTarget);
+
+opeth.ui.album.InputForm.prototype.band_ = 5629499534213120;
 
 /**
  * @override
@@ -48,10 +55,11 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
 
     var formLabel_ = this.getDomHelper().createDom(goog.dom.TagName.LABEL);
     formLabel_.setAttribute("for", "inputAlbum");
+    formLabel_.textContent = "Album";
     this.getDomHelper().appendChild(formGroup_, formLabel_);
 
-    var formLabelText_ = this.getDomHelper().createTextNode("Album");
-    this.getDomHelper().appendChild(formLabel_, formLabelText_);
+    //var formLabelText_ = this.getDomHelper().createTextNode("Album");
+    //this.getDomHelper().appendChild(formLabel_, formLabelText_);
 
     var formInput_ = this.getDomHelper().createDom(goog.dom.TagName.INPUT);
     goog.dom.classlist.add(formInput_, goog.getCssName("form-control"));
@@ -64,9 +72,40 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
     goog.dom.classlist.add(formButton_, goog.getCssName("btn"));
     goog.dom.classlist.add(formButton_, goog.getCssName("btn-default"));
     formButton_.setAttribute("type", "submit");
+    formButton_.textContent = "Add Album";
     this.getDomHelper().appendChild(element_, formButton_);
 
-    var formButtonText_ = this.getDomHelper().createTextNode("Add Album");
-    this.getDomHelper().appendChild(formButton_, formButtonText_);
+    //var formButtonText_ = this.getDomHelper().createTextNode("Add Album");
+    //this.getDomHelper().appendChild(formButton_, formButtonText_);
+
+    this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
+        event.preventDefault();
+        this.addAlbum_(this.band_, formInput_.value);
+    });
     
+};
+
+opeth.ui.album.InputForm.prototype.addAlbum_ = function(bandId, albumName) {
+
+    var album_ = new opeth.data.model.Album();
+    album_.setName(albumName);
+
+    opeth.GLOBALS.API_CLIENT.dispatchRequest(
+        opeth.data.request.Album.create(bandId, album_),
+        goog.bind(function(response) {
+            console.log("Album Added");
+            this.eventDispatcher_(album_);
+        }, this),
+        goog.bind(function(response) {
+            console.log("Fail");
+        }, this));
+
+};
+
+opeth.ui.album.InputForm.prototype.eventDispatcher_ = function(album_) {
+    this.dispatchEvent({
+        type: "album_input",
+        target: album_
+    });
+    console.log("inside eventDispatcher");
 };
