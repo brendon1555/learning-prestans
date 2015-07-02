@@ -58,9 +58,6 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
     formLabel_.textContent = "Album";
     this.getDomHelper().appendChild(formGroup_, formLabel_);
 
-    //var formLabelText_ = this.getDomHelper().createTextNode("Album");
-    //this.getDomHelper().appendChild(formLabel_, formLabelText_);
-
     var formInput_ = this.getDomHelper().createDom(goog.dom.TagName.INPUT);
     goog.dom.classlist.add(formInput_, goog.getCssName("form-control"));
     formInput_.setAttribute("type", "text");
@@ -74,9 +71,6 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
     formButton_.setAttribute("type", "submit");
     formButton_.textContent = "Add Album";
     this.getDomHelper().appendChild(element_, formButton_);
-
-    //var formButtonText_ = this.getDomHelper().createTextNode("Add Album");
-    //this.getDomHelper().appendChild(formButton_, formButtonText_);
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();

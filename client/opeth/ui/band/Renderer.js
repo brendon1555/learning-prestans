@@ -121,6 +121,8 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
             opeth.data.request.Band.delete(band.getId()),
             goog.bind(function(response) {
                 console.log("Band Deleted");
+                if(this.selectedBand_.getId() == band.getId())
+                    this.selectedBand_ = null;
                 this.fetchAll_();
             }, this),
             goog.bind(function(response) {

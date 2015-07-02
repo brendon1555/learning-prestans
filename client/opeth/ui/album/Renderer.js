@@ -49,8 +49,6 @@ opeth.ui.album.Renderer.prototype.enterDocument = function() {
     console.log("Inside Album renderer");
 
     var heading_ = this.getDomHelper().createDom(goog.dom.TagName.H1);
-    //var headingText_ = this.getDomHelper().createTextNode("Albums");
-    //this.getDomHelper().appendChild(heading_, headingText_);
     heading_.textContent = "Albums";
     this.getDomHelper().appendChild(element_, heading_);
 
@@ -97,10 +95,7 @@ opeth.ui.album.Renderer.prototype.createAlbumCell_ = function(album) {
     this.getDomHelper().appendChild(tableRow_, tableCell_);
 
     var tableButtonCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
-    this.getDomHelper().appendChild(tableRow_, tableButtonCell_)
-
-    //var tableCellText_ = this.getDomHelper().createTextNode(album.getName());
-    //this.getDomHelper().appendChild(tableCell_, tableCellText_);
+    this.getDomHelper().appendChild(tableRow_, tableButtonCell_);
 
     var tableCellButton_ = this.getDomHelper().createDom(goog.dom.TagName.BUTTON);
     goog.dom.classlist.add(tableCellButton_, goog.getCssName("close"));
@@ -113,9 +108,6 @@ opeth.ui.album.Renderer.prototype.createAlbumCell_ = function(album) {
     tableCellButtonSpan_.textContent = "×";
     this.getDomHelper().appendChild(tableCellButton_, tableCellButtonSpan_);
 
-    //var tableCellButtonText_ = this.getDomHelper().createTextNode("×");
-    //this.getDomHelper().appendChild(tableCellButtonSpan_, tableCellButtonText_);
-
     this.getHandler().listen(tableCellButtonSpan_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
         console.log(album.getId());
@@ -123,6 +115,8 @@ opeth.ui.album.Renderer.prototype.createAlbumCell_ = function(album) {
             opeth.data.request.Album.delete(this.band_, album.getId()),
             goog.bind(function(response) {
                 console.log("Album Deleted");
+                if(this.selectedAlbum_.getId() == album.getId())
+                    this.selectedAlbum_ = null;
                 this.fetchAll_(this.band_);
             }, this),
             goog.bind(function(response) {

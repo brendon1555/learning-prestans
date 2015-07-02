@@ -32,13 +32,13 @@ opeth.data.request.Album.fetchSingle = function(bandId, albumID) {
 
 
 opeth.data.request.Album.create = function(bandId, album, opt_filter) {
-    //var opt_filter = new opeth.data.filter.Album(false);
-    //opt_filter.enableName();
+    var opt_filter = new opeth.data.filter.Album(false);
+    opt_filter.enableName();
     var config_ = {
         identifier: "AlbumCreate",
         httpMethod: prestans.net.HttpMethod.POST,
         requestModel: album,
-        //requestFilter: opt_filter,
+        requestFilter: opt_filter,
         responseModel: prestans.rest.json.Response.EMPTY_BODY,
         urlFormat: "/band/%i/album",
         urlArgs: [bandId]
