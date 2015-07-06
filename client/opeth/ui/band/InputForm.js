@@ -83,6 +83,8 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
         this.addBand_(formInput_.value);
+        formInput_.value = "";
+        formButton_.setAttribute("disabled", "disabled");
     });
     
 };

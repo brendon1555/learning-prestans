@@ -27,7 +27,8 @@ opeth.ui.album.Renderer.prototype.selectedBand_ = null;
  * @enum {string}
  */
 opeth.ui.album.Renderer.EventType = {
-    SELECTED: goog.events.getUniqueId('opeth')
+    SELECTED: goog.events.getUniqueId('opeth'),
+    FALLBACK: goog.events.getUniqueId('opeth')
 };
 
 /**
@@ -155,9 +156,7 @@ opeth.ui.album.Renderer.prototype.renderAlbums_ = function() {
     var albums_ = (this.getModel());
 
     if(albums_.isEmpty()) {
-        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
-        fallback_.textContent = "No Albums";
-        this.getDomHelper().appendChild(this.tbody_, fallback_);
+        this.renderFallback_();
     }
     else {
         if(goog.isNull(this.selectedAlbum_))
@@ -187,6 +186,20 @@ opeth.ui.album.Renderer.prototype.selectAlbum_ = function(albumCell, album) {
         opeth.ui.album.Renderer.EventType.SELECTED,
         this.selectedBand_,
         album,
+        this)
+    );
+};
+
+opeth.ui.album.Renderer.prototype.renderFallback_ = function() {
+    this.getDomHelper().removeChildren(this.tbody_);
+    var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+    fallback_.textContent = "No Tracks";
+    this.getDomHelper().appendChild(this.tbody_, fallback_);
+
+    this.dispatchEvent(new opeth.ui.album.Renderer.SelectedEvent(
+        opeth.ui.album.Renderer.EventType.FALLBACK,
+        this.selectedBand_,
+        this.selectedAlbum_,
         this)
     );
 };

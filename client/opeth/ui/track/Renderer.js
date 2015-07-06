@@ -149,9 +149,7 @@ opeth.ui.track.Renderer.prototype.renderTracks_ = function() {
     var tracks_ = (this.getModel());
 
     if(tracks_.isEmpty()) {
-        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
-        fallback_.textContent = "No Tracks";
-        this.getDomHelper().appendChild(this.tbody_, fallback_);
+        this.renderFallback_();
     }
     else {
         if(goog.isNull(this.selectedTrack_))
@@ -177,6 +175,14 @@ opeth.ui.track.Renderer.prototype.selectTrack_ = function(trackCell, track) {
 
     this.selectedTrack_ = track;
 };
+
+opeth.ui.track.Renderer.prototype.renderFallback_ = function() {
+    this.getDomHelper().removeChildren(this.tbody_);
+    var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+    fallback_.textContent = "No Tracks";
+    this.getDomHelper().appendChild(this.tbody_, fallback_);
+};
+
 
 opeth.ui.track.Renderer.prototype.setBand_ = function(band) {
     this.selectedBand_ = band;

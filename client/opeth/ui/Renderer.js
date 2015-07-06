@@ -47,6 +47,11 @@ opeth.ui.Renderer.prototype.enterDocument = function() {
         console.log("Inside album listener");
     });
 
+    this.getHandler().listen(band_, opeth.ui.band.Renderer.EventType.FALLBACK, function(event) {
+        album_.renderFallback_();
+        console.log("Inside album fallback listener");
+    });
+
     var album_ = new opeth.ui.album.Renderer(this.getDomHelper());
     album_.render(rowDiv_);
 
@@ -55,6 +60,11 @@ opeth.ui.Renderer.prototype.enterDocument = function() {
         track_.setAlbum_(event.getAlbum());
         track_.fetchAll_();
         console.log("Inside track listener");
+    });
+
+    this.getHandler().listen(album_, opeth.ui.album.Renderer.EventType.FALLBACK, function(event) {
+        track_.renderFallback_();
+        console.log("Inside track fallback listener");
     });
 
 

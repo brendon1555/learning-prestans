@@ -88,6 +88,8 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
         this.addAlbum_(this.band_.getId(), formInput_.value);
+        formInput_.value = "";
+        formButton_.setAttribute("disabled", "disabled");
     });
     
 };

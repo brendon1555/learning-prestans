@@ -94,6 +94,8 @@ opeth.ui.track.InputForm.prototype.enterDocument = function() {
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
         this.addTrack_(this.band_.getId(), this.album_.getId(), formInput_.value);
+        formInput_.value = "";
+        formButton_.setAttribute("disabled", "disabled");
     });
     
 };

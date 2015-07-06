@@ -25,7 +25,8 @@ opeth.ui.band.Renderer.prototype.selectedBandCell_ = null;
  * @enum {string}
  */
 opeth.ui.band.Renderer.EventType = {
-    SELECTED: goog.events.getUniqueId('opeth')
+    SELECTED: goog.events.getUniqueId('opeth'),
+    FALLBACK: goog.events.getUniqueId('opeth')
 };
 
 /**
@@ -147,9 +148,7 @@ opeth.ui.band.Renderer.prototype.renderBands_ = function() {
     var bands_ = (this.getModel());
 
     if(bands_.isEmpty()) {
-        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
-        fallback_.textContent = "No Bands";
-        this.getDomHelper().appendChild(this.tbody_, fallback_);
+        this.renderFallback_();
     }
     else {
         if(goog.isNull(this.selectedBand_))
@@ -178,6 +177,19 @@ opeth.ui.band.Renderer.prototype.selectBand_ = function(bandCell, band) {
     this.dispatchEvent(new opeth.ui.band.Renderer.SelectedEvent(
         opeth.ui.band.Renderer.EventType.SELECTED,
         band,
+        this)
+    );
+};
+
+opeth.ui.band.Renderer.prototype.renderFallback_ = function() {
+    this.getDomHelper().removeChildren(this.tbody_);
+    var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+    fallback_.textContent = "No Bands";
+    this.getDomHelper().appendChild(this.tbody_, fallback_);
+
+    this.dispatchEvent(new opeth.ui.band.Renderer.SelectedEvent(
+        opeth.ui.band.Renderer.EventType.FALLBACK,
+        this.selectedBand_,
         this)
     );
 };
