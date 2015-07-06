@@ -17,11 +17,19 @@ opeth.ui.album.Renderer = function(opt_domHelper) {
 };
 goog.inherits(opeth.ui.album.Renderer, goog.ui.Component);
 
-
+opeth.ui.album.Renderer.prototype.InputForm_ = null;
 opeth.ui.album.Renderer.prototype.tbody_ = null;
 opeth.ui.album.Renderer.prototype.selectedAlbum_ = null;
 opeth.ui.album.Renderer.prototype.selectedAlbumCell_ = null;
-opeth.ui.album.Renderer.prototype.band_ = 5629499534213120;
+opeth.ui.album.Renderer.prototype.selectedBand_ = null;
+
+/**
+ * @enum {string}
+ */
+opeth.ui.album.Renderer.EventType = {
+    SELECTED: goog.events.getUniqueId('opeth')
+};
+
 /**
  * @override
  */
@@ -52,12 +60,10 @@ opeth.ui.album.Renderer.prototype.enterDocument = function() {
     heading_.textContent = "Albums";
     this.getDomHelper().appendChild(element_, heading_);
 
+    this.InputForm_ = new opeth.ui.album.InputForm(this.getDomHelper());
+    this.InputForm_.render(element_);
 
-    //closure event for adding item
-    var InputForm_ = new opeth.ui.album.InputForm(this.getDomHelper());
-    InputForm_.render(element_);
-
-    goog.events.listen(InputForm_, "album_input", goog.bind(this.fetchAll_, this, this.band_));
+    goog.events.listen(this.InputForm_, "album_input", goog.bind(this.fetchAll_, this, this.selectedBand_));
 
     var table_ = this.getDomHelper().createDom(goog.dom.TagName.TABLE);
     goog.dom.classlist.add(table_, goog.getCssName("table"));
@@ -67,13 +73,20 @@ opeth.ui.album.Renderer.prototype.enterDocument = function() {
     this.tbody_ = this.getDomHelper().createDom(goog.dom.TagName.TBODY);
     this.getDomHelper().appendChild(table_, this.tbody_);
 
-    this.fetchAll_(this.band_);
-};
 
-opeth.ui.album.Renderer.prototype.fetchAll_ = function(bandId) {
+    var loading_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+    loading_.textContent = "Loading...";
+    this.getDomHelper().appendChild(this.tbody_, loading_);
+
+    //this.fetchAll_(this.band_);
+};
+opeth.ui.album.Renderer.prototype.fetchAll_ = function() {
     console.log("Inside fetchAll");
+    console.log(this.selectedBand_);
+    this.InputForm_.setBand_(this.selectedBand_);
+    this.selectedAlbum_ = null;
     opeth.GLOBALS.API_CLIENT.dispatchRequest(
-        opeth.data.request.Album.fetchAll(bandId),
+        opeth.data.request.Album.fetchAll(this.selectedBand_.getId()),
         goog.bind(function(response) {
             console.log(response.getUnpackedBody());
             this.setModel(response.getUnpackedBody());
@@ -112,12 +125,12 @@ opeth.ui.album.Renderer.prototype.createAlbumCell_ = function(album) {
         event.preventDefault();
         console.log(album.getId());
         opeth.GLOBALS.API_CLIENT.dispatchRequest(
-            opeth.data.request.Album.delete(this.band_, album.getId()),
+            opeth.data.request.Album.delete(this.selectedBand_.getId(), album.getId()),
             goog.bind(function(response) {
                 console.log("Album Deleted");
                 if(this.selectedAlbum_.getId() == album.getId())
                     this.selectedAlbum_ = null;
-                this.fetchAll_(this.band_);
+                this.fetchAll_();
             }, this),
             goog.bind(function(response) {
                 console.log("Fail delete");
@@ -126,7 +139,7 @@ opeth.ui.album.Renderer.prototype.createAlbumCell_ = function(album) {
     });
     this.getHandler().listen(tableCell_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
-
+        console.log("Clicked " + album.getName());
         this.selectAlbum_(tableRow_, album);
     });
 
@@ -140,17 +153,24 @@ opeth.ui.album.Renderer.prototype.renderAlbums_ = function() {
 
     var albums_ = (this.getModel());
 
-    if(goog.isNull(this.selectedAlbum_))
-            this.selectedAlbum_ = albums_.objectAtIndex(0);
+    if(albums_.isEmpty()) {
+        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+        fallback_.textContent = "No Albums";
+        this.getDomHelper().appendChild(this.tbody_, fallback_);
+    }
+    else {
+        if(goog.isNull(this.selectedAlbum_))
+                this.selectedAlbum_ = albums_.objectAtIndex(0);
 
-    goog.iter.forEach(albums_, function(album) {
-        var tr_ = this.createAlbumCell_(album);
-        this.getDomHelper().appendChild(this.tbody_, tr_);
+        goog.iter.forEach(albums_, function(album) {
+            var tr_ = this.createAlbumCell_(album);
+            this.getDomHelper().appendChild(this.tbody_, tr_);
 
-        if(this.selectedAlbum_.getId() == album.getId())
-            this.selectAlbum_(tr_, album);
+            if(this.selectedAlbum_.getId() == album.getId())
+                this.selectAlbum_(tr_, album);
 
-    }, this);
+        }, this);
+    };
 };
 
 opeth.ui.album.Renderer.prototype.selectAlbum_ = function(albumCell, album) {
@@ -161,4 +181,49 @@ opeth.ui.album.Renderer.prototype.selectAlbum_ = function(albumCell, album) {
     goog.dom.classlist.add(this.selectedAlbumCell_, goog.getCssName("success"));
 
     this.selectedAlbum_ = album;
+
+    this.dispatchEvent(new opeth.ui.album.Renderer.SelectedEvent(
+        opeth.ui.album.Renderer.EventType.SELECTED,
+        this.selectedBand_,
+        album,
+        this)
+    );
+};
+
+opeth.ui.album.Renderer.prototype.setBand_ = function(band) {
+    this.selectedBand_ = band;
+};
+
+/**
+ * @constructor
+ * @extends {goog.events.Event}
+ * @param {!string} type
+ * @param {!opeth.data.model.Band} band
+ * @param {!opeth.data.model.Album} album
+ * @param {goog.ui.Component=} opt_target
+ */
+opeth.ui.album.Renderer.SelectedEvent = function(type, band, album, opt_target) {
+    goog.events.Event.call(this, type, opt_target);
+    console.log("Inside Click Dispatch");
+    /**
+     * @type {!opeth.data.model.Album}
+     * @private
+     */
+    this.album_ = album;
+    this.band_ = band;
+};
+goog.inherits(opeth.ui.album.Renderer.SelectedEvent, goog.events.Event);
+
+/**
+ * @return {!opeth.data.model.Album}
+ */
+opeth.ui.album.Renderer.SelectedEvent.prototype.getAlbum = function() {
+    return this.album_;
+};
+
+/**
+ * @return {!opeth.data.model.Band}
+ */
+opeth.ui.album.Renderer.SelectedEvent.prototype.getBand = function() {
+    return this.band_;
 };

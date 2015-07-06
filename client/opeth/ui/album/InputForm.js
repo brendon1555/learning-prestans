@@ -17,8 +17,12 @@ opeth.ui.album.InputForm = function(opt_domHelper) {
 };
 goog.inherits(opeth.ui.album.InputForm, goog.ui.Component, goog.events.EventTarget);
 
-opeth.ui.album.InputForm.prototype.band_ = 5629499534213120;
+//opeth.ui.album.InputForm.prototype.band_ = 5629499534213120;
+opeth.ui.album.InputForm.prototype.band_ = null;
 
+opeth.ui.album.InputForm.prototype.setBand_ = function(band) {
+    this.band_ = band;
+};
 /**
  * @override
  */
@@ -74,7 +78,7 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
-        this.addAlbum_(this.band_, formInput_.value);
+        this.addAlbum_(this.band_.getId(), formInput_.value);
     });
     
 };

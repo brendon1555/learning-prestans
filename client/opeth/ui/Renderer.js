@@ -41,8 +41,22 @@ opeth.ui.Renderer.prototype.enterDocument = function() {
     var band_ = new opeth.ui.band.Renderer(this.getDomHelper());
     band_.render(rowDiv_);
 
+    this.getHandler().listen(band_, opeth.ui.band.Renderer.EventType.SELECTED, function(event) {
+        album_.setBand_(event.getBand());
+        album_.fetchAll_();
+        console.log("Inside album listener");
+    });
+
     var album_ = new opeth.ui.album.Renderer(this.getDomHelper());
     album_.render(rowDiv_);
+
+    this.getHandler().listen(album_, opeth.ui.album.Renderer.EventType.SELECTED, function(event) {
+        track_.setBand_(event.getBand());
+        track_.setAlbum_(event.getAlbum());
+        track_.fetchAll_();
+        console.log("Inside track listener");
+    });
+
 
     var track_ = new opeth.ui.track.Renderer(this.getDomHelper());
     track_.render(rowDiv_);

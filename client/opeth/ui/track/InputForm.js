@@ -17,8 +17,16 @@ opeth.ui.track.InputForm = function(opt_domHelper) {
 };
 goog.inherits(opeth.ui.track.InputForm, goog.ui.Component, goog.events.EventTarget);
 
-opeth.ui.track.InputForm.prototype.band_ = 5629499534213120;
-opeth.ui.track.InputForm.prototype.album_ = 5418393301680128;
+opeth.ui.track.InputForm.prototype.band_ = null;
+opeth.ui.track.InputForm.prototype.album_ = null;
+
+opeth.ui.track.InputForm.prototype.setBand_ = function(band) {
+    this.band_ = band;
+};
+
+opeth.ui.track.InputForm.prototype.setAlbum_ = function(album) {
+    this.album_ = album;
+};
 
 /**
  * @override
@@ -75,7 +83,7 @@ opeth.ui.track.InputForm.prototype.enterDocument = function() {
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
-        this.addTrack_(this.band_, this.album_, formInput_.value);
+        this.addTrack_(this.band_.getId(), this.album_.getId(), formInput_.value);
     });
     
 };

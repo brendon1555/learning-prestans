@@ -17,12 +17,12 @@ opeth.ui.track.Renderer = function(opt_domHelper) {
 };
 goog.inherits(opeth.ui.track.Renderer, goog.ui.Component);
 
-
+opeth.ui.track.Renderer.prototype.InputForm_ = null;
 opeth.ui.track.Renderer.prototype.tbody_ = null;
 opeth.ui.track.Renderer.prototype.selectedTrack_ = null;
 opeth.ui.track.Renderer.prototype.selectedTrackCell_ = null;
-opeth.ui.track.Renderer.prototype.band_ = 5629499534213120;
-opeth.ui.track.Renderer.prototype.album_ = 5418393301680128;
+opeth.ui.track.Renderer.prototype.selectedBand_ = null;
+opeth.ui.track.Renderer.prototype.selectedAlbum_ = null;
 /**
  * @override
  */
@@ -54,10 +54,10 @@ opeth.ui.track.Renderer.prototype.enterDocument = function() {
     this.getDomHelper().appendChild(element_, heading_);
 
 
-    var InputForm_ = new opeth.ui.track.InputForm(this.getDomHelper());
-    InputForm_.render(element_);
+    this.InputForm_ = new opeth.ui.track.InputForm(this.getDomHelper());
+    this.InputForm_.render(element_);
 
-    goog.events.listen(InputForm_, "track_input", goog.bind(this.fetchAll_, this, this.band_, this.album_));
+    goog.events.listen(this.InputForm_, "track_input", goog.bind(this.fetchAll_, this, this.band_, this.album_));
 
 
     var table_ = this.getDomHelper().createDom(goog.dom.TagName.TABLE);
@@ -68,13 +68,22 @@ opeth.ui.track.Renderer.prototype.enterDocument = function() {
     this.tbody_ = this.getDomHelper().createDom(goog.dom.TagName.TBODY);
     this.getDomHelper().appendChild(table_, this.tbody_);
 
-    this.fetchAll_(this.band_, this.album_);
+    //this.fetchAll_(this.band_, this.album_);
+
+    var loading_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+    loading_.textContent = "Loading...";
+    this.getDomHelper().appendChild(this.tbody_, loading_);
 };
 
-opeth.ui.track.Renderer.prototype.fetchAll_ = function(bandId, albumId) {
-    console.log("Inside fetchAll");
+opeth.ui.track.Renderer.prototype.fetchAll_ = function() {
+    console.log("Inside track fetchAll");
+    console.log(this.selectedBand_);
+    console.log(this.selectedAlbum_);
+    this.selectedTrack_ = null;
+    this.InputForm_.setBand_(this.selectedBand_);
+    this.InputForm_.setAlbum_(this.selectedAlbum_);
     opeth.GLOBALS.API_CLIENT.dispatchRequest(
-        opeth.data.request.Track.fetchAll(bandId, albumId),
+        opeth.data.request.Track.fetchAll(this.selectedBand_.getId(), this.selectedAlbum_.getId()),
         goog.bind(function(response) {
             console.log(response.getUnpackedBody());
             this.setModel(response.getUnpackedBody());
@@ -113,12 +122,12 @@ opeth.ui.track.Renderer.prototype.createTrackCell_ = function(track) {
         event.preventDefault();
         console.log(track.getId());
         opeth.GLOBALS.API_CLIENT.dispatchRequest(
-            opeth.data.request.Track.delete(this.band_, this.album_, track.getId()),
+            opeth.data.request.Track.delete(this.selectedBand_.getId(), this.selectedAlbum_.getId(), track.getId()),
             goog.bind(function(response) {
                 console.log("Track Deleted");
                 if(this.selectedTrack_.getId() == track.getId())
                     this.selectedTrack_ = null;
-                this.fetchAll_(this.band_, this.album_);
+                this.fetchAll_();
             }, this),
             goog.bind(function(response) {
                 console.log("Fail delete");
@@ -141,17 +150,24 @@ opeth.ui.track.Renderer.prototype.renderTracks_ = function() {
 
     var tracks_ = (this.getModel());
 
-    if(goog.isNull(this.selectedTrack_))
-            this.selectedTrack_ = tracks_.objectAtIndex(0);
+    if(tracks_.isEmpty()) {
+        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+        fallback_.textContent = "No Tracks";
+        this.getDomHelper().appendChild(this.tbody_, fallback_);
+    }
+    else {
+        if(goog.isNull(this.selectedTrack_))
+                this.selectedTrack_ = tracks_.objectAtIndex(0);
 
-    goog.iter.forEach(tracks_, function(track) {
-        var tr_ = this.createTrackCell_(track);
-        this.getDomHelper().appendChild(this.tbody_, tr_);
+        goog.iter.forEach(tracks_, function(track) {
+            var tr_ = this.createTrackCell_(track);
+            this.getDomHelper().appendChild(this.tbody_, tr_);
 
-        if(this.selectedTrack_.getId() == track.getId())
-            this.selectTrack_(tr_, track);
+            if(this.selectedTrack_.getId() == track.getId())
+                this.selectTrack_(tr_, track);
 
-    }, this);
+        }, this);
+    };
 };
 
 opeth.ui.track.Renderer.prototype.selectTrack_ = function(trackCell, track) {
@@ -162,4 +178,12 @@ opeth.ui.track.Renderer.prototype.selectTrack_ = function(trackCell, track) {
     goog.dom.classlist.add(this.selectedTrackCell_, goog.getCssName("success"));
 
     this.selectedTrack_ = track;
+};
+
+opeth.ui.track.Renderer.prototype.setBand_ = function(band) {
+    this.selectedBand_ = band;
+};
+
+opeth.ui.track.Renderer.prototype.setAlbum_ = function(album) {
+    this.selectedAlbum_ = album;
 };

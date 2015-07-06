@@ -20,6 +20,14 @@ goog.inherits(opeth.ui.band.Renderer, goog.ui.Component);
 opeth.ui.band.Renderer.prototype.tbody_ = null;
 opeth.ui.band.Renderer.prototype.selectedBand_ = null;
 opeth.ui.band.Renderer.prototype.selectedBandCell_ = null;
+
+/**
+ * @enum {string}
+ */
+opeth.ui.band.Renderer.EventType = {
+    SELECTED: goog.events.getUniqueId('opeth')
+};
+
 /**
  * @override
  */
@@ -50,8 +58,6 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
     heading_.textContent = "Bands";
     this.getDomHelper().appendChild(element_, heading_);
 
-
-    //closure event for adding item
     var InputForm_ = new opeth.ui.band.InputForm(this.getDomHelper());
     InputForm_.render(element_);
 
@@ -70,6 +76,7 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
 
 opeth.ui.band.Renderer.prototype.fetchAll_ = function() {
     console.log("Inside fetchAll");
+    this.selectedBand_ = null;
     opeth.GLOBALS.API_CLIENT.dispatchRequest(
         opeth.data.request.Band.fetchAll(),
         goog.bind(function(response) {
@@ -92,6 +99,7 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
     tableCell_.textContent = band.getName();
     this.getDomHelper().appendChild(tableRow_, tableCell_);
 
+
     var tableButtonCell_ = this.getDomHelper().createDom(goog.dom.TagName.TD);
     this.getDomHelper().appendChild(tableRow_, tableButtonCell_);
 
@@ -105,7 +113,6 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
     tableCellButtonSpan_.setAttribute("aria-hiddem", "true");
     tableCellButtonSpan_.textContent = "×";
     this.getDomHelper().appendChild(tableCellButton_, tableCellButtonSpan_);
-
 
     this.getHandler().listen(tableCellButtonSpan_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
@@ -125,7 +132,7 @@ opeth.ui.band.Renderer.prototype.createBandCell_ = function(band) {
     });
     this.getHandler().listen(tableCell_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
-
+        console.log("Clicked " + band.getName());
         this.selectBand_(tableRow_, band);
     });
 
@@ -139,17 +146,24 @@ opeth.ui.band.Renderer.prototype.renderBands_ = function() {
 
     var bands_ = (this.getModel());
 
-    if(goog.isNull(this.selectedBand_))
-            this.selectedBand_ = bands_.objectAtIndex(0);
+    if(bands_.isEmpty()) {
+        var fallback_ = this.getDomHelper().createDom(goog.dom.TagName.P);
+        fallback_.textContent = "No Bands";
+        this.getDomHelper().appendChild(this.tbody_, fallback_);
+    }
+    else {
+        if(goog.isNull(this.selectedBand_))
+                this.selectedBand_ = bands_.objectAtIndex(0);
 
-    goog.iter.forEach(bands_, function(band) {
-        var tr_ = this.createBandCell_(band);
-        this.getDomHelper().appendChild(this.tbody_, tr_);
+        goog.iter.forEach(bands_, function(band) {
+            var tr_ = this.createBandCell_(band);
+            this.getDomHelper().appendChild(this.tbody_, tr_);
 
-        if(this.selectedBand_.getId() == band.getId())
-            this.selectBand_(tr_, band);
+            if(this.selectedBand_.getId() == band.getId())
+                this.selectBand_(tr_, band);
 
-    }, this);
+        }, this);
+    };
 };
 
 opeth.ui.band.Renderer.prototype.selectBand_ = function(bandCell, band) {
@@ -160,4 +174,36 @@ opeth.ui.band.Renderer.prototype.selectBand_ = function(bandCell, band) {
     goog.dom.classlist.add(this.selectedBandCell_, goog.getCssName("success"));
 
     this.selectedBand_ = band;
+
+    this.dispatchEvent(new opeth.ui.band.Renderer.SelectedEvent(
+        opeth.ui.band.Renderer.EventType.SELECTED,
+        band,
+        this)
+    );
+};
+
+/**
+ * @constructor
+ * @extends {goog.events.Event}
+ * @param {!string} type
+ * @param {!opeth.data.model.Band} band
+ * @param {goog.ui.Component=} opt_target
+ */
+opeth.ui.band.Renderer.SelectedEvent = function(type, band, opt_target) {
+    goog.events.Event.call(this, type, opt_target);
+    console.log("Inside Click Dispatch");
+    /**
+     * @type {!opeth.data.model.Band}
+     * @private
+     */
+    this.band_ = band;
+
+};
+goog.inherits(opeth.ui.band.Renderer.SelectedEvent, goog.events.Event);
+
+/**
+ * @return {!opeth.data.model.Band}
+ */
+opeth.ui.band.Renderer.SelectedEvent.prototype.getBand = function() {
+    return this.band_;
 };
