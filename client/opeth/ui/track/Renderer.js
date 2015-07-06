@@ -68,8 +68,6 @@ opeth.ui.track.Renderer.prototype.enterDocument = function() {
     this.tbody_ = this.getDomHelper().createDom(goog.dom.TagName.TBODY);
     this.getDomHelper().appendChild(table_, this.tbody_);
 
-    //this.fetchAll_(this.band_, this.album_);
-
     var loading_ = this.getDomHelper().createDom(goog.dom.TagName.P);
     loading_.textContent = "Loading...";
     this.getDomHelper().appendChild(this.tbody_, loading_);

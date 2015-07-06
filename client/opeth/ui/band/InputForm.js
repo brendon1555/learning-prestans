@@ -56,9 +56,6 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     formLabel_.textContent = "Band";
     this.getDomHelper().appendChild(formGroup_, formLabel_);
 
-    //var formLabelText_ = this.getDomHelper().createTextNode("Band");
-    //this.getDomHelper().appendChild(formLabel_, formLabelText_);
-
     var formInput_ = this.getDomHelper().createDom(goog.dom.TagName.INPUT);
     goog.dom.classlist.add(formInput_, goog.getCssName("form-control"));
     formInput_.setAttribute("type", "text");
@@ -73,9 +70,6 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     formButton_.setAttribute("disabled", "disabled");
     formButton_.textContent = "Add Band";
     this.getDomHelper().appendChild(element_, formButton_);
-
-    //var formButtonText_ = this.getDomHelper().createTextNode("Add Band");
-    //this.getDomHelper().appendChild(formButton_, formButtonText_);
 
     this.getHandler().listen(formInput_, goog.events.EventType.INPUT, function(event) {
         if(formInput_.value == "") {

@@ -17,7 +17,6 @@ opeth.ui.album.InputForm = function(opt_domHelper) {
 };
 goog.inherits(opeth.ui.album.InputForm, goog.ui.Component, goog.events.EventTarget);
 
-//opeth.ui.album.InputForm.prototype.band_ = 5629499534213120;
 opeth.ui.album.InputForm.prototype.band_ = null;
 
 opeth.ui.album.InputForm.prototype.setBand_ = function(band) {

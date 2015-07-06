@@ -78,8 +78,9 @@ opeth.ui.album.Renderer.prototype.enterDocument = function() {
     loading_.textContent = "Loading...";
     this.getDomHelper().appendChild(this.tbody_, loading_);
 
-    //this.fetchAll_(this.band_);
 };
+
+
 opeth.ui.album.Renderer.prototype.fetchAll_ = function() {
     console.log("Inside fetchAll");
     console.log(this.selectedBand_);
