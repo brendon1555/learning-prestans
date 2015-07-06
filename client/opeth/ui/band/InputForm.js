@@ -70,11 +70,21 @@ opeth.ui.band.InputForm.prototype.enterDocument = function() {
     goog.dom.classlist.add(formButton_, goog.getCssName("btn"));
     goog.dom.classlist.add(formButton_, goog.getCssName("btn-default"));
     formButton_.setAttribute("type", "submit");
+    formButton_.setAttribute("disabled", "disabled");
     formButton_.textContent = "Add Band";
     this.getDomHelper().appendChild(element_, formButton_);
 
     //var formButtonText_ = this.getDomHelper().createTextNode("Add Band");
     //this.getDomHelper().appendChild(formButton_, formButtonText_);
+
+    this.getHandler().listen(formInput_, goog.events.EventType.INPUT, function(event) {
+        if(formInput_.value == "") {
+            formButton_.setAttribute("disabled", "disabled");
+        }
+        else {
+            formButton_.removeAttribute("disabled");
+        };
+    });
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();

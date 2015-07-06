@@ -74,7 +74,17 @@ opeth.ui.album.InputForm.prototype.enterDocument = function() {
     goog.dom.classlist.add(formButton_, goog.getCssName("btn-default"));
     formButton_.setAttribute("type", "submit");
     formButton_.textContent = "Add Album";
+    formButton_.setAttribute("disabled", "disabled");
     this.getDomHelper().appendChild(element_, formButton_);
+
+    this.getHandler().listen(formInput_, goog.events.EventType.INPUT, function(event) {
+        if(formInput_.value == "") {
+            formButton_.setAttribute("disabled", "disabled");
+        }
+        else {
+            formButton_.removeAttribute("disabled");
+        };
+    });
 
     this.getHandler().listen(formButton_, goog.events.EventType.CLICK, function(event) {
         event.preventDefault();
