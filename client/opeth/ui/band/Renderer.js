@@ -57,6 +57,7 @@ opeth.ui.band.Renderer.prototype.enterDocument = function() {
 
     var heading_ = this.getDomHelper().createDom(goog.dom.TagName.H1);
     heading_.textContent = "Bands";
+    goog.dom.classlist.add(heading_, goog.getCssName("text-center"));
     this.getDomHelper().appendChild(element_, heading_);
 
     var InputForm_ = new opeth.ui.band.InputForm(this.getDomHelper());
